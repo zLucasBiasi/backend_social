@@ -1,7 +1,9 @@
-import User from "../models/userModel";
-
+// import User from "../models/userModel";
+export const home = (req: any, res: any) => {
+  console.log("oi");
+};
 export const getAllUsers = (req: any, res: any) => {
-  // Lógica para buscar todos os usuários e renderizar a página com os dados
+  console.log("get");
 };
 export const createUser = (req: any, res: any) => {
   // Lógica para criar um novo usuário e redirecionar para a página de detalhes do usuário
