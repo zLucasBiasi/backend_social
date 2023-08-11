@@ -1,8 +1,8 @@
 import express from "express";
-import "dotenv/config";
 
-import { server } from "./api/server/server";
+import router from "./api/routes/routes";
 
-const app = express();
+export const app = express();
 
-app.use(server);
+app.use(express.json());
+app.use(router);

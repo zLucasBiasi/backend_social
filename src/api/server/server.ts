@@ -1,12 +1,8 @@
-import express from "express";
 import "dotenv/config";
-import { router } from "../routes/routes";
+import { app } from "../../app";
 
-export const server = express();
 const port = process.env.PORT;
 
-server.use(router);
-
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
