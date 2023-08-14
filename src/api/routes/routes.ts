@@ -8,12 +8,13 @@ import {
   deleteUser,
   home,
 } from "../controllers/UserController";
+import { verifyToken } from "../middleware/auth";
 
 router.get("/", home);
 router.post("/register", register);
 router.post("/login", login);
 router.get("/user/:id", getUserById);
-router.put("/:id", updateUser);
-router.delete("/user/:id", deleteUser);
+router.put("/", verifyToken, updateUser);
+router.delete("/", verifyToken, deleteUser);
 
 export default router;

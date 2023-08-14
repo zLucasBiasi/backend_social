@@ -18,14 +18,14 @@ export const register = async (req: Request, res: Response) => {
 
     payload.password = encryptedPassword;
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: payload,
     });
 
     const token = jwt.sign(
       {
         exp: Math.floor(Date.now() / 1000) + 60 * 60,
-        data: { email: payload.email },
+        data: { email: user.email, id: user.id },
       },
       secret_key
     );
@@ -45,9 +45,20 @@ export const login = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { email: payload.email },
     });
-
+    if (!user) {
+      return res
+        .status(400)
+        .send({ "mensagem:": "usuario não existe nos registros" });
+    }
     if (user && (await bcrypt.compare(payload.password, user.password))) {
-      res.status(201).json({ "Usuario logado com sucesso": user });
+      const token = jwt.sign(
+        {
+          exp: Math.floor(Date.now() / 1000) + 60 * 60,
+          data: { email: user.email, id: user.id },
+        },
+        secret_key
+      );
+      res.status(201).json({ "Usuario logado com sucesso": user, token });
     } else {
       res.status(400).send({ "mensagem:": "email ou senha errados" });
     }
@@ -70,19 +81,40 @@ export const getUserById = async (req: Request, res: Response) => {
     res.status(500).json(err);
   }
 };
-export const updateUser = (req: any, res: any) => {
-  // Lógica para atualizar os dados de um usuário e redirecionar para a página de detalhes do usuário
-};
-export const deleteUser = async (req: any, res: any) => {
+
+export const updateUser = async (req: any, res: Response) => {
   try {
-    const id = req.params.id;
+    const userID = req.user;
+    const payload = req.body;
+    await prisma.user.update({
+      where: {
+        id: userID,
+      },
+      data: {
+        first_name: payload.first_name,
+        last_name: payload.last_name,
+        phone: payload.phone,
+      },
+    });
+    res.status(201).json({ "mensagem:": "usuario editado com sucesso" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+export const deleteUser = async (req: any, res: Response) => {
+  try {
+    const userID = req.user;
+
     await prisma.user.delete({
       where: {
-        id,
+        id: userID,
       },
     });
     res.status(201).json({ "mensagem:": "usuario deletado com sucesso" });
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };

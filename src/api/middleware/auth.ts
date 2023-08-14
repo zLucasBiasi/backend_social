@@ -1,21 +1,19 @@
-// const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-// import { Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
-// const config = process.env;
+const secret_key = process.env.SECRET_KEY!;
 
-// const verifyToken = (req: Request, res: Response) => {
-//   const token = "oi";
-
-//   if (!token) {
-//     return res.status(403).send("A token is required for authentication");
-//   }
-//   try {
-//     const decoded = jwt.verify(token, config.TOKEN_KEY);
-//     // req.user = decoded;
-//   } catch (err) {
-//     return res.status(401).send("Invalid Token");
-//   }
-// };
-
-// module.exports = verifyToken;
+export const verifyToken = (req: any, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization;
+  try {
+    if (!token) {
+      return res.status(403).send("A token is required for authentication");
+    }
+    const verify: any = jwt.verify(token, secret_key);
+    req.user = verify.data.id;
+    next();
+  } catch (err) {
+    return res.status(401).send("Invalid Token");
+  }
+};
