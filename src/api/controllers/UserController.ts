@@ -30,10 +30,9 @@ export const register = async (req: Request, res: Response) => {
       secret_key
     );
 
-    res
-      .status(201)
-      .json({ "mensagem:": "usuario registrado com sucesso", token });
+    res.status(201).json({ mensagem: "usuario registrado com sucesso", token });
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
@@ -41,15 +40,10 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const payload = req.body;
-
     const user = await prisma.user.findUnique({
       where: { email: payload.email },
     });
-    if (!user) {
-      return res
-        .status(400)
-        .send({ "mensagem:": "usuario não existe nos registros" });
-    }
+
     if (user && (await bcrypt.compare(payload.password, user.password))) {
       const token = jwt.sign(
         {
@@ -60,7 +54,7 @@ export const login = async (req: Request, res: Response) => {
       );
       res.status(201).json({ "Usuario logado com sucesso": user, token });
     } else {
-      res.status(400).send({ "mensagem:": "email ou senha errados" });
+      res.status(400).send({ mensagem: "email ou senha errados" });
     }
   } catch (err) {
     console.log(err);
@@ -76,7 +70,7 @@ export const getUserById = async (req: Request, res: Response) => {
         id,
       },
     });
-    res.status(201).json({ "mensagem:": user });
+    res.status(201).json({ mensagem: user });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -93,10 +87,9 @@ export const updateUser = async (req: any, res: Response) => {
       data: {
         first_name: payload.first_name,
         last_name: payload.last_name,
-        phone: payload.phone,
       },
     });
-    res.status(201).json({ "mensagem:": "usuario editado com sucesso" });
+    res.status(201).json({ mensagem: "usuario editado com sucesso" });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -112,7 +105,7 @@ export const deleteUser = async (req: any, res: Response) => {
         id: userID,
       },
     });
-    res.status(201).json({ "mensagem:": "usuario deletado com sucesso" });
+    res.status(201).json({ mensagem: "usuario deletado com sucesso" });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

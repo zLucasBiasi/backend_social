@@ -16,19 +16,19 @@ model User {
   password   String
   first_name String
   last_name  String
-  age        Int
-  phone      Int       @unique
+  age        String
   createdAt  DateTime  @default(now())
   Profile    Profile[]
 }
 
 model Profile {
-  id          String @id @default(uuid())
-  userId      String
-  user        User   @relation(fields: [userId], references: [id])
-  avatar      String
-  nickname    String
-  banner      String
-  description String
-  location    String
+  id           String @id @default(uuid())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id])
+  avatar       String
+  nickname     String
+  profilePhoto String
+  banner       String
+  description  String
+  location     String
 }
