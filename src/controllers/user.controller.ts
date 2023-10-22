@@ -6,10 +6,6 @@ import { Request, Response } from "express";
 
 const secret_key = process.env.SECRET_KEY!;
 
-export const home = (req: Request, res: Response) => {
-  res.send({ "mensagem: ": "Api rodando" });
-};
-
 export const register = async (req: Request, res: Response) => {
   try {
     const payload = req.body;

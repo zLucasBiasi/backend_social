@@ -27,6 +27,6 @@
     "pg": "^8.11.2"
   },
   "scripts": {
-    "start": "nodemon src/api/server/server.ts"
+    "start": "nodemon"
   }
 }
