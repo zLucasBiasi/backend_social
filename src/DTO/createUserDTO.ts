@@ -4,6 +4,7 @@ export class createUserDTO {
   password: string;
   last_name: string;
   age: string;
+  static email: any;
   constructor(
     email: string,
     password: string,

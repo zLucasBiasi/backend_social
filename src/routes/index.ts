@@ -1,9 +1,9 @@
 import Router from "express";
 
-import { home } from "../controllers/default.controllers";
+import { defaultController } from "../controllers/default.controllers";
 
 const defaulRoutes = Router();
 
-defaulRoutes.get("/", home);
+defaulRoutes.get("/", defaultController.home);
 
 export default defaulRoutes;

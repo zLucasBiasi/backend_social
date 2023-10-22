@@ -2,7 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 
 import express from "express";
-import defaulRoutes from "./routes";
+import defaulRoutes from "./routes/index";
 import userRoutes from "./routes/user.routes";
 
 const port = process.env.PORT;

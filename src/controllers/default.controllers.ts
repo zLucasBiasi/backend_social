@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 
-export const home = (req: Request, res: Response) => {
-  res.send({ "mensagem: ": "Api rodando" });
-};
+export class defaultController {
+  static home(req: Request, res: Response) {
+    return res.send({ "mensagem: ": "Api rodando" });
+  }
+}
