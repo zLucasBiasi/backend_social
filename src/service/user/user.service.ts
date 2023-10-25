@@ -1,29 +1,36 @@
 import { Request, Response } from "express";
-import { createUserDTO } from "../DTO/createUserDTO";
+import { createUserDTO } from "../../DTO/createUserDTO";
 
 import bcrypt from "bcrypt";
-import { AuthService } from "./auth.service";
-import { UserRepository } from "../repository/user.reposity";
+import { AuthService } from "../auth.service";
+import { UserRepository } from "../../repository/user.reposity";
+import { EmailAlreadyInUseError } from "./errors";
 
+interface Data {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  age: string;
+}
 export class User {
-  static async register(req: Request, res: Response) {
-    try {
-      const payload = req.body;
-      const encryptedPassword = await bcrypt.hash(payload.password, 10);
-      payload.password = encryptedPassword;
+  static async register(data: Data) {
+    const { email, password, first_name, last_name, age } = data;
 
-      const user = await UserRepository.register(payload);
+    const userAlreadyExist = await UserRepository.findUnicByEmail(email);
+    if (userAlreadyExist) throw new EmailAlreadyInUseError();
 
-      const token = await AuthService.token({
-        email: createUserDTO.email,
-        id: user.id,
-      });
-      res
-        .status(201)
-        .json({ mensagem: "usuario registrado com sucesso", token });
-    } catch (err) {
-      res.status(500).json(err);
-    }
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    const user = await UserRepository.register({
+      email,
+      password: encryptedPassword,
+      first_name,
+      last_name,
+      age,
+    });
+    const { password: _, ...props } = user;
+    return props;
   }
 
   static async login(req: Request, res: Response) {
@@ -37,7 +44,7 @@ export class User {
           email: createUserDTO.email,
           id: user.id,
         });
-        res.status(201).json({ "Usuario logado com sucesso": token });
+        res.status(201).json({ token });
       } else {
         res.status(400).send({ mensagem: "email ou senha errados" });
       }
@@ -48,7 +55,7 @@ export class User {
 
   static async updateUser(req: any, res: Response) {
     try {
-      const userID = req.user;
+      const userID = req.userID;
       const payload = req.body;
 
       await UserRepository.updateUser(userID, payload);
@@ -62,7 +69,7 @@ export class User {
 
   static async deleteUser(req: any, res: Response) {
     try {
-      const userID = req.user;
+      const userID = req.userID;
       await UserRepository.deleteUser(userID);
       res.status(201).json({ mensagem: "usuario deletado com sucesso" });
     } catch (err) {

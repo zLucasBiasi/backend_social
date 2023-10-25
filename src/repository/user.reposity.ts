@@ -8,9 +8,9 @@ export class UserRepository {
     return user;
   }
 
-  static async findUnicByEmail(payload: any) {
+  static async findUnicByEmail(email: string) {
     const user = await prisma.user.findUnique({
-      where: { email: payload.email },
+      where: { email },
     });
     return user;
   }

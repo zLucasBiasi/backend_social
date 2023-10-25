@@ -22,13 +22,21 @@ model User {
 }
 
 model Profile {
-  id           String @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  user         User   @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
   avatar       String
   nickname     String
   profilePhoto String
   banner       String
   description  String
   location     String
+  Publish      Publish[]
+}
+
+model Publish {
+  id      String  @id @default(uuid())
+  userId  String
+  profile Profile @relation(fields: [userId], references: [id])
+  message String
 }
