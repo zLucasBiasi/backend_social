@@ -15,8 +15,8 @@ export class UserRepository {
     return user;
   }
 
-  static async updateUser(userID: any, payload: any) {
-    await prisma.user.update({
+  static update(userID: any, payload: any) {
+    return prisma.user.update({
       where: {
         id: userID,
       },
@@ -24,13 +24,21 @@ export class UserRepository {
         first_name: payload.first_name,
         last_name: payload.last_name,
       },
+      select: {
+        first_name: true,
+        last_name: true,
+      },
     });
   }
 
-  static async deleteUser(userID: any) {
-    await prisma.user.delete({
+  static async delete(userID: any) {
+    return await prisma.user.delete({
       where: {
         id: userID,
+      },
+      select: {
+        first_name: true,
+        last_name: true,
       },
     });
   }

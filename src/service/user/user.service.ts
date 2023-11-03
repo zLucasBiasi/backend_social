@@ -5,14 +5,8 @@ import bcrypt from "bcrypt";
 import { AuthService } from "../auth.service";
 import { UserRepository } from "../../repository/user.reposity";
 import { EmailAlreadyInUseError } from "./errors";
+import { Data, Login, Update } from "./types.user";
 
-interface Data {
-  email: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  age: string;
-}
 export class User {
   static async register(data: Data) {
     const { email, password, first_name, last_name, age } = data;
@@ -33,48 +27,33 @@ export class User {
     return props;
   }
 
-  static async login(req: Request, res: Response) {
-    try {
-      const payload = req.body;
+  static async login(data: Login) {
+    const { email, password } = data;
 
-      const user = await UserRepository.findUnicByEmail(payload);
+    const user = await UserRepository.findUnicByEmail(email);
 
-      if (user && (await bcrypt.compare(payload.password, user.password))) {
-        const token = await AuthService.token({
-          email: createUserDTO.email,
-          id: user.id,
-        });
-        res.status(201).json({ token });
-      } else {
-        res.status(400).send({ mensagem: "email ou senha errados" });
-      }
-    } catch (err) {
-      res.status(500).json(err);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = await AuthService.token({
+        email: createUserDTO.email,
+        id: user.id,
+      });
+      return token;
     }
   }
 
-  static async updateUser(req: any, res: Response) {
-    try {
-      const userID = req.userID;
-      const payload = req.body;
+  static async update(data: Update, id: string) {
+    const { first_name, last_name } = data;
 
-      await UserRepository.updateUser(userID, payload);
+    const UserEdit = await UserRepository.update(id, {
+      first_name,
+      last_name,
+    });
 
-      res.status(201).json({ mensagem: "usuario editado com sucesso" });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
+    return UserEdit;
   }
 
-  static async deleteUser(req: any, res: Response) {
-    try {
-      const userID = req.userID;
-      await UserRepository.deleteUser(userID);
-      res.status(201).json({ mensagem: "usuario deletado com sucesso" });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
+  static async delete(id: string) {
+    const userDeleted = await UserRepository.delete(id);
+    return userDeleted;
   }
 }
